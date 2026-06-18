@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocalPoint.ai — Where Ideas Take Flight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0d0d14;
+      --glass:     rgba(255,255,255,0.07);
+      --glass-b:   rgba(255,255,255,0.14);
+      --gold:      #d4a853;
+      --gold-lt:   #f0c97a;
+      --violet:    #7c5cbf;
+      --rose:      #e0627a;
+      --white:     #f6f4f0;
+      --mid:       #9a97a0;
+      --blur:      blur(18px);
+      --r:         16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--ink);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── SLIDESHOW ─────────────────────────────── */
+    #slideshow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transform: scale(1.07);
+      transition: opacity 1.6s cubic-bezier(.4,0,.2,1),
+                  transform 8s cubic-bezier(.25,.46,.45,.94);
+    }
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* gradient images via SVG data-URIs (no network needed) */
+    .slide:nth-child(1) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230a0020'/%3E%3Cstop offset='1' stop-color='%234a1040'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23a)' width='1600' height='900'/%3E%3Ccircle cx='1200' cy='200' r='400' fill='%237c5cbf' fill-opacity='.3'/%3E%3Ccircle cx='300' cy='700' r='300' fill='%23d4a853' fill-opacity='.15'/%3E%3C/svg%3E"); }
+    .slide:nth-child(2) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='1' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23001020'/%3E%3Cstop offset='1' stop-color='%23100030'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23b)' width='1600' height='900'/%3E%3Ccircle cx='400' cy='300' r='500' fill='%23e0627a' fill-opacity='.2'/%3E%3Ccircle cx='1300' cy='600' r='350' fill='%237c5cbf' fill-opacity='.25'/%3E%3C/svg%3E"); }
+    .slide:nth-child(3) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23001830'/%3E%3Cstop offset='1' stop-color='%23200a30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23c)' width='1600' height='900'/%3E%3Ccircle cx='800' cy='450' r='450' fill='%23d4a853' fill-opacity='.12'/%3E%3Ccircle cx='100' cy='100' r='200' fill='%23e0627a' fill-opacity='.18'/%3E%3Ccircle cx='1500' cy='800' r='280' fill='%237c5cbf' fill-opacity='.2'/%3E%3C/svg%3E"); }
+    .slide:nth-child(4) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='d' x1='.5' y1='0' x2='.5' y2='1'%3E%3Cstop offset='0' stop-color='%2308001a'/%3E%3Cstop offset='1' stop-color='%230a1a2e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23d)' width='1600' height='900'/%3E%3Ccircle cx='1400' cy='100' r='300' fill='%23d4a853' fill-opacity='.22'/%3E%3Ccircle cx='200' cy='600' r='400' fill='%237c5cbf' fill-opacity='.18'/%3E%3C/svg%3E"); }
+
+    #slideshow::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(13,13,20,.45) 0%, rgba(13,13,20,.25) 50%, rgba(13,13,20,.8) 100%);
+    }
+
+    /* slide indicators */
+    #slide-dots {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .dot.active { background: var(--gold); width: 24px; border-radius: 4px; }
+
+    /* ── NAV ───────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(13,13,20,.55);
+      
+      -webkit-backdrop-filter: var(--blur);
+      backdrop-filter: var(--blur);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      transition: padding .3s, background .3s;
+    }
+    nav.scrolled { padding: 14px 48px; background: rgba(13,13,20,.85); }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 900;
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: rgba(246,244,240,.75);
+      font-size: .88rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: color .25s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--gold);
+      transition: width .3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+    .btn-ghost {
+      background: none;
+      border: 1px solid rgba(255,255,255,.22);
+      color: var(--white);
+      padding: 9px 22px;
+      border-radius: 50px;
+      font-size: .84rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: all .25s;
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,255,255,.4);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      border: none;
+      color: var(--ink);
+      padding: 9px 24px;
+      border-radius: 50px;
+      font-size: .84rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .04em;
+      box-shadow: 0 4px 20px rgba(212,168,83,.3);
+      transition: all .25s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(212,168,83,.45);
+    }
+
+    /* user avatar in nav */
+    #nav-user {
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+    #nav-user.visible { display: flex; }
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--violet), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; color: #fff;
+      cursor: pointer;
+    }
+    #nav-username { font-size: .88rem; color: var(--mid); }
+    #btn-logout {
+      background: none;
+      border: none;
+      color: var(--rose);
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    #btn-logout:hover { opacity: .7; }
+
+    /* ── MAIN CONTENT ──────────────────────────── */
+    main { position: relative; z-index: 10; }
+
+    /* ── HOME / HERO ───────────────────────────── */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212,168,83,.12);
+      border: 1px solid rgba(212,168,83,.25);
+      color: var(--gold-lt);
+      font-family: 'Space Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 50px;
+      margin-bottom: 32px;
+      animation: fadeUp .8s .1s both;
+    }
+    .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: .4; }
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.03em;
+      margin-bottom: 28px;
+      animation: fadeUp .8s .25s both;
+    }
+    .hero-title .accent {
+      background: linear-gradient(135deg, var(--gold), var(--rose) 60%, var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(246,244,240,.65);
+      max-width: 540px;
+      line-height: 1.75;
+      margin-bottom: 48px;
+      animation: fadeUp .8s .4s both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp .8s .55s both;
+    }
+
+    .btn-hero {
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .btn-hero.primary {
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      border: none;
+      color: var(--ink);
+      box-shadow: 0 8px 32px rgba(212,168,83,.35);
+    }
+    .btn-hero.primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(212,168,83,.5); }
+    .btn-hero.secondary {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--white);
+      backdrop-filter: var(--blur);
+    }
+    .btn-hero.secondary:hover { background: var(--glass-b); transform: translateY(-2px); }
+
+    /* scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,.35);
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      animation: fadeUp 1s 1s both;
+    }
+    .scroll-arrow {
+      width: 20px; height: 30px;
+      border: 1.5px solid rgba(255,255,255,.25);
+      border-radius: 10px;
+      position: relative;
+    }
+    .scroll-arrow::after {
+      content: '';
+      position: absolute;
+      top: 5px; left: 50%; transform: translateX(-50%);
+      width: 3px; height: 6px;
+      background: rgba(255,255,255,.45);
+      border-radius: 2px;
+      animation: scrollDot 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0%, 100% { top: 5px; opacity: 1; }
+      80% { top: 16px; opacity: 0; }
+    }
+
+    /* ── FEATURES ──────────────────────────────── */
+    #features {
+      padding: 120px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 64px;
+      max-width: 560px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--r);
+      padding: 40px 32px;
+      backdrop-filter: var(--blur);
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--rose));
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 24px 48px rgba(0,0,0,.3); border-color: rgba(255,255,255,.15); }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+    .card:nth-child(1) .card-icon { background: rgba(212,168,83,.15); }
+    .card:nth-child(2) .card-icon { background: rgba(224,98,122,.15); }
+    .card:nth-child(3) .card-icon { background: rgba(124,92,191,.15); }
+
+    .card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .card p { color: var(--mid); font-size: .9rem; line-height: 1.7; }
+
+    /* ── MODAL / OVERLAY ───────────────────────── */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(13,13,20,.7);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: rgba(22,22,34,.95);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      padding: 48px 40px;
+      position: relative;
+      animation: popIn .35s cubic-bezier(.175,.885,.32,1.275);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.9) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 18px;
+      background: none; border: none;
+      color: var(--mid); font-size: 1.3rem; cursor: pointer;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      transition: background .2s, color .2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.08); color: var(--white); }
+
+    /* tabs */
+    .modal-tabs {
+      display: flex;
+      background: rgba(255,255,255,.05);
+      border-radius: 50px;
+      padding: 4px;
+      margin-bottom: 36px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: 50px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--mid);
+      background: none;
+      transition: all .25s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      color: var(--ink);
+      box-shadow: 0 2px 12px rgba(212,168,83,.3);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .modal-sub { color: var(--mid); font-size: .88rem; margin-bottom: 28px; }
+
+    /* form */
+    .form-group { margin-bottom: 18px; position: relative; }
+    .form-group label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 13px 18px;
+      color: var(--white);
+      font-size: .95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .form-group input::placeholder { color: rgba(154,151,160,.5); }
+    .form-group input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212,168,83,.15);
+    }
+
+    .form-error {
+      font-size: .78rem;
+      color: var(--rose);
+      margin-top: 4px;
+      display: none;
+    }
+    .form-error.visible { display: block; }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .remember-row input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+    .remember-row label {
+      font-size: .84rem;
+      color: var(--mid);
+      cursor: pointer;
+    }
+
+    .btn-form {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      border: none;
+      border-radius: 12px;
+      color: var(--ink);
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .03em;
+      transition: all .3s;
+      box-shadow: 0 6px 24px rgba(212,168,83,.3);
+    }
+    .btn-form:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(212,168,83,.45); }
+    .btn-form:active { transform: translateY(0); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: rgba(154,151,160,.4);
+      font-size: .78rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,.07);
+    }
+
+    /* ── WELCOME BANNER (logged-in) ─────────────── */
+    #welcome-banner {
+      display: none;
+      position: fixed;
+      top: 80px; right: 24px;
+      z-index: 150;
+      background: rgba(22,22,34,.92);
+      border: 1px solid rgba(212,168,83,.25);
+      border-radius: var(--r);
+      padding: 20px 28px;
+      backdrop-filter: var(--blur);
+      max-width: 320px;
+      animation: slideIn .5s cubic-bezier(.175,.885,.32,1.275);
+      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+    }
+    #welcome-banner.visible { display: block; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    #welcome-banner h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+    #welcome-banner p { font-size: .84rem; color: var(--mid); }
+    .banner-close {
+      position: absolute; top: 10px; right: 12px;
+      background: none; border: none; color: var(--mid);
+      cursor: pointer; font-size: 1rem;
+    }
+
+    /* ── TOAST ─────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(22,22,34,.95);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: .88rem;
+      font-weight: 500;
+      z-index: 300;
+      opacity: 0;
+      transition: all .4s;
+      pointer-events: none;
+      backdrop-filter: var(--blur);
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--mid);
+      font-size: .82rem;
+      position: relative;
+      z-index: 10;
+    }
+    footer .logo-sm {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--gold), var(--rose));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    footer .footer-links { display: flex; gap: 28px; }
+    footer a { color: var(--mid); text-decoration: none; transition: color .2s; }
+    footer a:hover { color: var(--white); }
+
+    /* ── ANIMATIONS ─────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .nav-links { display: none; }
+      #features { padding: 80px 24px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      footer .footer-links { flex-wrap: wrap; justify-content: center; }
+      .modal-box { margin: 16px; padding: 36px 24px; }
+    }
+
+    /* particles */
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Dynamic Slideshow Background -->
+<div id="slideshow">
+  <div class="slide active"></div>
+  <div class="slide"></div>
+  <div class="slide"></div>
+  <div class="slide"></div>
+</div>
+
+<!-- Particles canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Slide Dots -->
+<div id="slide-dots">
+  <div class="dot active" onclick="goToSlide(0)"></div>
+  <div class="dot" onclick="goToSlide(1)"></div>
+  <div class="dot" onclick="goToSlide(2)"></div>
+  <div class="dot" onclick="goToSlide(3)"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="scrollToSection('home')">FocalPoint.ai</div>
+  <ul class="nav-links">
+    <li><a href="#home" onclick="scrollToSection('home'); return false;">Home</a></li>
+    <li><a href="#features" onclick="scrollToSection('features'); return false;">Features</a></li>
+    <li><a href="#about" onclick="scrollToSection('about'); return false;">About</a></li>
+    <li><a href="#contact" onclick="scrollToSection('contact'); return false;">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <!-- logged-out state -->
+    <div id="nav-auth">
+      <button class="btn-ghost" onclick="openModal('login')">Sign In</button>
+      <button class="btn-primary" onclick="openModal('signup')">Get Started</button>
+    </div>
+    <!-- logged-in state -->
+    <div id="nav-user">
+      <div class="avatar" id="nav-avatar">U</div>
+      <span id="nav-username"></span>
+      <button id="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HOME -->
+  <section id="home">
+    <span class="hero-eyebrow"><span class="eyebrow-dot"></span>Now in early access</span>
+    <h1 class="hero-title">
+      Where Ideas<br>
+      <span class="accent">Take Flight.</span>
+    </h1>
+    <p class="hero-sub">
+      FocalPoint.ai is your ultimate AI-powered image verification and enhancement platform. Ensure authenticity, elevate quality, and bring your creative visions to life with our cutting-edge tools.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-hero primary" onclick="openModal('signup')">Start for free</button>
+      <button class="btn-hero secondary" onclick="scrollToSection('features')">See how it works</button>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-arrow"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <p class="section-label">What we offer</p>
+    <h2 class="section-title">"Verify authenticity and elevate quality with our advanced AI-powered image analysis and enhancement tools."</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">✦</div>
+        <h3>Authenticity Verification</h3>
+        <p>Our advanced AI algorithms detect and verify the authenticity of images, ensuring they are genuine and have not been tampered with.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⬡</div>
+        <h3>Image Enhancement</h3>
+        <p>Our AI-powered enhancement tools improve image quality, correct lighting issues, and bring out the best in every photo.</p>
+      </div>
+    
+    </div>
+  </section>
+
+  <!-- ABOUT (stub) -->
+  <section id="about" style="padding:100px 48px; max-width:900px; margin:0 auto; position:relative; z-index:10;">
+    <p class="section-label">Our story</p>
+    <h2 class="section-title">Built by creators, for creators.</h2>
+    <p style="color:var(--mid); font-size:1.05rem; line-height:1.85; max-width:600px;">
+     FocalPoint.ai was founded with a mission to empower creators and innovators by providing cutting-edge tools that enhance creativity and streamline workflows. Our team is passionate about leveraging AI technology to solve real-world problems, ensuring that every image you work with is authentic, high-quality, and ready to make an impact.<br>
+      Kaushal Yadav<br>
+      Shivang Saxena<br>
+      Shivansh Tyagi<br>
+    </p>
+  </section>
+
+  <!-- CONTACT (stub) -->
+  <section id="contact" style="padding:80px 48px 140px; max-width:900px; margin:0 auto; position:relative; z-index:10;">
+    <p class="section-label">Get in touch</p>
+    <h2 class="section-title">We'd love to hear from you.</h2>
+    <p style="color:var(--mid); font-size:.95rem; margin-bottom:32px;">Questions, feedback, or just want to say hello? Drop us a line.</p>
+    <button class="btn-hero primary" onclick="showToast('📬 Message sent! We\'ll be in touch soon.')">Send a message</button>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-sm">FocalPoint.ai</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Blog</a>
+    <a href="#">Careers</a>
+  </div>
+  <span>© 2025 FocalPoint.ai Inc.</span>
+</footer>
+
+<!-- AUTH MODAL -->
+<div id="modal-overlay" onclick="closeOnOverlay(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+
+    <div class="modal-tabs">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="tab-panel active" id="panel-login">
+      <h2 class="modal-title">Welcome back</h2>
+      <p class="modal-sub">Sign in to continue your journey.</p>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com" />
+        <div class="form-error" id="login-email-err">Please enter a valid email.</div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+        <div class="form-error" id="login-pass-err">Incorrect password.</div>
+      </div>
+      <div class="remember-row">
+        <input type="checkbox" id="remember-me" />
+        <label for="remember-me">Remember me on this device</label>
+      </div>
+      <button class="btn-form" onclick="handleLogin()">Sign In</button>
+      <div class="divider">or</div>
+      <p style="text-align:center; color:var(--mid); font-size:.84rem;">Don't have an account? <a href="#" onclick="switchTab('signup')" style="color:var(--gold-lt); text-decoration:none; font-weight:600;">Create one →</a></p>
+    </div>
+
+    <!-- SIGNUP -->
+    <div class="tab-panel" id="panel-signup">
+      <h2 class="modal-title">Create account</h2>
+      <p class="modal-sub">Join thousands of creators on FocalPoint.ai.</p>
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="signup-name" placeholder="Your name" />
+        <div class="form-error" id="signup-name-err">Name is required.</div>
+      </div>
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" />
+        <div class="form-error" id="signup-email-err">Please enter a valid email.</div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters" />
+        <div class="form-error" id="signup-pass-err">Password must be at least 8 characters.</div>
+      </div>
+      <button class="btn-form" onclick="handleSignup()" style="margin-top:8px;">Create Account</button>
+      <div class="divider">or</div>
+      <p style="text-align:center; color:var(--mid); font-size:.84rem;">Already have an account? <a href="#" onclick="switchTab('login')" style="color:var(--gold-lt); text-decoration:none; font-weight:600;">Sign in →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME BANNER -->
+<div id="welcome-banner">
+  <button class="banner-close" onclick="document.getElementById('welcome-banner').classList.remove('visible')">✕</button>
+  <h4 id="banner-title">Welcome back! ✦</h4>
+  <p id="banner-text">You're signed in and ready to create.</p>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── SLIDESHOW ──────────────────────────────
+const slides = document.querySelectorAll('.slide');
+const dots   = document.querySelectorAll('.dot');
+let current  = 0;
+let slideTimer;
+
+function goToSlide(n) {
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+  resetSlideTimer();
+}
+
+function nextSlide() { goToSlide(current + 1); }
+
+function resetSlideTimer() {
+  clearInterval(slideTimer);
+  slideTimer = setInterval(nextSlide, 6000);
+}
+resetSlideTimer();
+
+// ── PARTICLES ─────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx    = canvas.getContext('2d');
+let particles = [];
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function spawnParticle() {
+  return {
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + .3,
+    dx: (Math.random() - .5) * .3,
+    dy: -Math.random() * .4 - .1,
+    alpha: Math.random() * .4 + .1,
+  };
+}
+for (let i = 0; i < 80; i++) particles.push(spawnParticle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach((p, i) => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(212,168,83,${p.alpha})`;
+    ctx.fill();
+    p.x += p.dx;
+    p.y += p.dy;
+    if (p.y < -4) particles[i] = { ...spawnParticle(), y: canvas.height + 4 };
+  });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ── NAV SCROLL ────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+function scrollToSection(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── SESSION MANAGEMENT ────────────────────
+function getUsers() {
+  return JSON.parse(localStorage.getItem('lum_users') || '{}');
+}
+function saveUsers(u) {
+  localStorage.setItem('lum_users', JSON.stringify(u));
+}
+function setSession(user, remember) {
+  const storage = remember ? localStorage : sessionStorage;
+  storage.setItem('lum_session', JSON.stringify(user));
+}
+function getSession() {
+  const ls = localStorage.getItem('lum_session');
+  const ss = sessionStorage.getItem('lum_session');
+  if (ls) return { user: JSON.parse(ls), remember: true };
+  if (ss) return { user: JSON.parse(ss), remember: false };
+  return null;
+}
+function clearSession() {
+  localStorage.removeItem('lum_session');
+  sessionStorage.removeItem('lum_session');
+}
+
+function applySession(session, isNew) {
+  const user = session.user;
+  // show user in nav
+  document.getElementById('nav-auth').style.display = 'none';
+  document.getElementById('nav-user').classList.add('visible');
+  document.getElementById('nav-avatar').textContent = user.name.charAt(0).toUpperCase();
+  document.getElementById('nav-username').textContent = user.name.split(' ')[0];
+
+  // welcome banner
+  document.getElementById('banner-title').textContent =
+    isNew ? `Welcome, ${user.name}! ✦` : `Welcome back, ${user.name}! ✦`;
+  document.getElementById('banner-text').textContent =
+    isNew ? 'Your account is ready. Start creating.' : 'You\'re signed in and ready to create.';
+  document.getElementById('welcome-banner').classList.add('visible');
+  setTimeout(() => document.getElementById('welcome-banner').classList.remove('visible'), 5000);
+}
+
+function logout() {
+  clearSession();
+  document.getElementById('nav-auth').style.display = '';
+  document.getElementById('nav-user').classList.remove('visible');
+  showToast("You've been signed out.");
+}
+
+// restore session on load
+window.addEventListener('DOMContentLoaded', () => {
+  const s = getSession();
+  if (s) applySession(s, false);
+});
+
+// ── MODAL ─────────────────────────────────
+const overlay = document.getElementById('modal-overlay');
+
+function openModal(tab) {
+  overlay.classList.add('open');
+  switchTab(tab);
+}
+function closeModal() {
+  overlay.classList.remove('open');
+}
+function closeOnOverlay(e) {
+  if (e.target === overlay) closeModal();
+}
+function switchTab(tab) {
+  ['login','signup'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`panel-${t}`).classList.toggle('active', t === tab);
+  });
+}
+
+// ── AUTH HANDLERS ─────────────────────────
+function showErr(id, show) {
+  document.getElementById(id).classList.toggle('visible', show);
+}
+function clearErrs(...ids) { ids.forEach(id => showErr(id, false)); }
+
+function handleLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const remember = document.getElementById('remember-me').checked;
+  clearErrs('login-email-err', 'login-pass-err');
+
+  if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showErr('login-email-err', true); return; }
+
+  const users = getUsers();
+  if (!users[email] || users[email].password !== btoa(password)) {
+    showErr('login-pass-err', true);
+    return;
+  }
+
+  const user = { name: users[email].name, email };
+  setSession(user, remember);
+  closeModal();
+  applySession({ user }, false);
+  showToast('✦ Signed in successfully!');
+}
+
+function handleSignup() {
+  const name     = document.getElementById('signup-name').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  clearErrs('signup-name-err', 'signup-email-err', 'signup-pass-err');
+
+  let ok = true;
+  if (!name) { showErr('signup-name-err', true); ok = false; }
+  if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showErr('signup-email-err', true); ok = false; }
+  if (password.length < 8) { showErr('signup-pass-err', true); ok = false; }
+  if (!ok) return;
+
+  const users = getUsers();
+  if (users[email]) {
+    document.getElementById('signup-email-err').textContent = 'This email is already registered.';
+    showErr('signup-email-err', true);
+    return;
+  }
+
+  users[email] = { name, password: btoa(password) };
+  saveUsers(users);
+
+  const user = { name, email };
+  setSession(user, true);
+  closeModal();
+  applySession({ user }, true);
+  showToast('🎉 Account created! Welcome to Luminary.');
+}
+
+// ── TOAST ─────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// keyboard close
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

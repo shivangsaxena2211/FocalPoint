@@ -1,0 +1,284 @@
+/* Shared FocalPoint theme — landing + detection dashboard */
+
+:root {
+  --fp-ink: #0d0d14;
+  --fp-glass: rgba(255, 255, 255, 0.07);
+  --fp-glass-b: rgba(255, 255, 255, 0.14);
+  --fp-gold: #d4a853;
+  --fp-gold-lt: #f0c97a;
+  --fp-violet: #7c5cbf;
+  --fp-rose: #e0627a;
+  --fp-white: #f6f4f0;
+  --fp-mid: #9a97a0;
+  --fp-blur: blur(18px);
+  --fp-r: 16px;
+}
+
+/* ── Live background (shared) ─────────────────────────────── */
+.fp-live-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fp-live-bg #slideshow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.fp-live-bg .slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.07);
+  transition:
+    opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.fp-live-bg .slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fp-live-bg .slide:nth-child(1) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230a0020'/%3E%3Cstop offset='1' stop-color='%234a1040'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23a)' width='1600' height='900'/%3E%3Ccircle cx='1200' cy='200' r='400' fill='%237c5cbf' fill-opacity='.3'/%3E%3Ccircle cx='300' cy='700' r='300' fill='%23d4a853' fill-opacity='.15'/%3E%3C/svg%3E");
+}
+
+.fp-live-bg .slide:nth-child(2) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='1' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23001020'/%3E%3Cstop offset='1' stop-color='%23100030'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23b)' width='1600' height='900'/%3E%3Ccircle cx='400' cy='300' r='500' fill='%23e0627a' fill-opacity='.2'/%3E%3Ccircle cx='1300' cy='600' r='350' fill='%237c5cbf' fill-opacity='.25'/%3E%3C/svg%3E");
+}
+
+.fp-live-bg .slide:nth-child(3) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23001830'/%3E%3Cstop offset='1' stop-color='%23200a30'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23c)' width='1600' height='900'/%3E%3Ccircle cx='800' cy='450' r='450' fill='%23d4a853' fill-opacity='.12'/%3E%3Ccircle cx='100' cy='100' r='200' fill='%23e0627a' fill-opacity='.18'/%3E%3Ccircle cx='1500' cy='800' r='280' fill='%237c5cbf' fill-opacity='.2'/%3E%3C/svg%3E");
+}
+
+.fp-live-bg .slide:nth-child(4) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'%3E%3Cdefs%3E%3ClinearGradient id='d' x1='.5' y1='0' x2='.5' y2='1'%3E%3Cstop offset='0' stop-color='%2308001a'/%3E%3Cstop offset='1' stop-color='%230a1a2e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23d)' width='1600' height='900'/%3E%3Ccircle cx='1400' cy='100' r='300' fill='%23d4a853' fill-opacity='.22'/%3E%3Ccircle cx='200' cy='600' r='400' fill='%237c5cbf' fill-opacity='.18'/%3E%3C/svg%3E");
+}
+
+.fp-live-bg #slideshow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(13, 13, 20, 0.45) 0%,
+    rgba(13, 13, 20, 0.25) 50%,
+    rgba(13, 13, 20, 0.85) 100%
+  );
+}
+
+.fp-live-bg #particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.fp-slide-dots {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+.fp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  padding: 0;
+}
+
+.fp-dot.active {
+  background: var(--fp-gold);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ── Dashboard shell ──────────────────────────────────────── */
+.fp-dashboard {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--fp-white);
+  background: var(--fp-ink);
+}
+
+.fp-dashboard-content {
+  position: relative;
+  z-index: 10;
+}
+
+.fp-label {
+  font-family: "Space Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fp-gold);
+}
+
+.fp-label-muted {
+  font-family: "Space Mono", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(212, 168, 83, 0.65);
+}
+
+.fp-display {
+  font-family: "Playfair Display", serif;
+}
+
+.fp-btn-gradient {
+  background: linear-gradient(135deg, var(--fp-gold), var(--fp-rose));
+  color: var(--fp-ink);
+  font-weight: 700;
+  transition: all 0.25s;
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.3);
+}
+
+.fp-btn-gradient:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(212, 168, 83, 0.45);
+}
+
+.fp-btn-gradient:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fp-btn-ghost {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--fp-white);
+  transition: all 0.25s;
+}
+
+.fp-btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.fp-logo-text {
+  font-family: "Playfair Display", serif;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--fp-gold), var(--fp-rose));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard-panel {
+  border-radius: var(--fp-r);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--fp-glass);
+  backdrop-filter: var(--fp-blur);
+  -webkit-backdrop-filter: var(--fp-blur);
+}
+
+.panel-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.panel-threat {
+  border-color: rgba(224, 98, 122, 0.35);
+  box-shadow: inset 0 1px 0 rgba(224, 98, 122, 0.12);
+}
+
+.panel-verified {
+  border-color: rgba(212, 168, 83, 0.35);
+  box-shadow: inset 0 1px 0 rgba(212, 168, 83, 0.12);
+}
+
+.fp-dashboard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(13, 13, 20, 0.55);
+  backdrop-filter: var(--fp-blur);
+  -webkit-backdrop-filter: var(--fp-blur);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--fp-r);
+}
+
+@media (min-width: 640px) {
+  .fp-dashboard-nav {
+    padding: 18px 28px;
+  }
+}
+
+.fp-status-online {
+  color: var(--fp-gold-lt);
+  border-color: rgba(212, 168, 83, 0.3);
+  background: rgba(212, 168, 83, 0.1);
+}
+
+.fp-status-online .fp-pulse-dot {
+  background: var(--fp-gold);
+  box-shadow: 0 0 8px rgba(212, 168, 83, 0.8);
+}
+
+.fp-text-threat {
+  color: var(--fp-rose);
+}
+
+.fp-text-verified {
+  color: var(--fp-gold-lt);
+}
+
+.fp-bg-threat {
+  background: rgba(224, 98, 122, 0.12);
+  border-color: rgba(224, 98, 122, 0.35);
+  color: var(--fp-rose);
+}
+
+.fp-bg-verified {
+  background: rgba(212, 168, 83, 0.12);
+  border-color: rgba(212, 168, 83, 0.35);
+  color: var(--fp-gold-lt);
+}
+
+.compare-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), var(--fp-gold), var(--fp-rose));
+  outline: none;
+}
+
+.compare-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, var(--fp-gold), var(--fp-rose));
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.45);
+  cursor: grab;
+}
+
+.compare-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, var(--fp-gold), var(--fp-rose));
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.45);
+  cursor: grab;
+}

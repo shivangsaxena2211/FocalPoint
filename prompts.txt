@@ -1,0 +1,65 @@
+Create the React frontend with:
+
+- Tailwind CSS
+- Modern dark theme
+- Drag and drop upload
+- Image preview
+- Upload button
+- Loading animation
+- Results card
+
+Connect it to Flask API localhost:5000/detect
+
+
+
+
+
+
+Add proper error handling for:
+- Unsupported file types
+- Server errors
+- No file selected
+- Large files
+
+
+
+
+
+Make the UI look like a modern cybersecurity dashboard.
+
+Color palette:
+- Dark background
+- Blue accent
+- Green for real images
+- Red for AI-generated images
+
+Add confidence meter and status badge.
+
+
+
+
+
+
+
+Improve this project to portfolio quality.
+
+Add:
+- Detection history
+- Downloadable PDF report
+- Analysis summary
+- Confidence gauge
+- File details
+- Responsive mobile design
+- Clean folder structure
+- Production-ready code
+
+
+
+
+
+pip install flask
+pip install flask-cors
+pip install transformers
+pip install torch
+pip install pillow
+
