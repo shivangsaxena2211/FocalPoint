@@ -22,5 +22,5 @@ numpy==1.26.4
 pandas==2.2.3
 pillow==11.1.0
 torch==2.9.0
-torchvision==0.22.0
-transformers==5.12.1
+torchvision
+transformers
